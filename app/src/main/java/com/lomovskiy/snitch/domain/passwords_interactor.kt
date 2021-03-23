@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface PasswordsInteractor {
 
-    suspend fun savePassword(login: String, password: String)
+    suspend fun savePassword(passwordEntity: PasswordEntity)
 
     fun subscribeOnPasswordsUpdates(): StateFlow<List<PasswordEntity>>
 
@@ -15,8 +15,8 @@ class PasswordsInteractorImpl(
     private val passwordsRepo: PasswordsRepo
 ) : PasswordsInteractor {
 
-    override suspend fun savePassword(login: String, password: String) {
-        passwordsRepo.create(PasswordEntity(login, password))
+    override suspend fun savePassword(passwordEntity: PasswordEntity) {
+        passwordsRepo.create(passwordEntity)
     }
 
     override fun subscribeOnPasswordsUpdates(): StateFlow<List<PasswordEntity>> {
