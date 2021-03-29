@@ -6,7 +6,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,47 +16,76 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lomovskiy.snitch.AppLoader
 import com.lomovskiy.snitch.domain.PasswordEntity
-import com.lomovskiy.snitch.domain.PasswordsInteractor
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-data class ScreenPasswordsRenderModel(
+class ScreenPasswordsViewModel : ViewModel() {
 
-)
+    private val states = MutableStateFlow(ScreenPasswordsState.empty())
 
-class ScreenPasswordsViewModel(
-    private val interactor: PasswordsInteractor = AppLoader.interactor
-) : ViewModel() {
-
-    fun getPasswords(): StateFlow<List<PasswordEntity>> {
-        return interactor.subscribeOnPasswordsUpdates()
+    fun getStates(): StateFlow<ScreenPasswordsState> {
+        return states
     }
 
-    fun addNewPassword() {
+    fun handleAction(action: Action) {
         viewModelScope.launch {
-            interactor.savePassword(PasswordEntity.stub())
+            when (action) {
+                Action.OnDialogAddNewPasswordCancelButtonClicked -> {
+                    states.emit(states.value.copy(dialogAddNewPasswordState = null))
+                }
+                is Action.OnDialogAddNewPasswordOkButtonClicked -> {
+                    states.emit(states.value.copy(dialogAddNewPasswordState = null))
+                }
+                Action.OnAddNewPasswordButtonClicked -> {
+                    states.emit(states.value.copy(
+                        dialogAddNewPasswordState = DialogAddNewPasswordState(
+                            nameValue = "",
+                            loginValue = "",
+                            passwordValue = "",
+                            onPositiveButtonClick = { name: String, login: String, password: String ->
+                                handleAction(Action.OnDialogAddNewPasswordOkButtonClicked(name, login, password))
+                            },
+                            onNegativeButtonClick = {
+                                handleAction(Action.OnDialogAddNewPasswordCancelButtonClicked)
+                            }
+                        )
+                    ))
+                }
+            }
         }
+    }
+
+    sealed class Action {
+        class OnDialogAddNewPasswordOkButtonClicked(val name: String, val login: String, val password: String) : Action()
+        object OnDialogAddNewPasswordCancelButtonClicked : Action()
+        object OnAddNewPasswordButtonClicked : Action()
     }
 
 }
 
-@Composable
-fun AppBar(title: String) {
-    TopAppBar(title = {
-        Text(text = title)
-    })
+data class ScreenPasswordsState(
+    val dialogAddNewPasswordState: DialogAddNewPasswordState?,
+    val passwords: List<PasswordEntity>
+) {
+
+    companion object {
+        fun empty(): ScreenPasswordsState {
+            return ScreenPasswordsState(
+                dialogAddNewPasswordState = null,
+                passwords = emptyList()
+            )
+        }
+    }
+
 }
 
 @ExperimentalComposeUiApi
 @Composable
 fun ScreenPasswords(viewModel: ScreenPasswordsViewModel) {
 
-    val s = viewModel.getPasswords().collectAsState(initial = emptyList())
-
-    val showDialogAddPassword: MutableState<Boolean> =
-        remember { mutableStateOf(false) }
+    val state = viewModel.getStates().collectAsState()
 
     Scaffold(
         topBar = { AppBar(title = "Passwords") },
@@ -65,26 +95,19 @@ fun ScreenPasswords(viewModel: ScreenPasswordsViewModel) {
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(s.value.size, itemContent = { idx ->
-                        ListItem(s.value[idx], {})
+                    items(state.value.passwords.size, itemContent = { idx ->
+                        ListItem(state.value.passwords[idx], {})
                     })
                 }
-                if (showDialogAddPassword.value) {
-                    AlertDialog(
-                        onDismissRequest = {},
-                        confirmButton = {
-                            Button(onClick = { showDialogAddPassword.value = false }) {
-                                Text(text = "OK")
-                            }
-                        }
-                    )
+                state.value.dialogAddNewPasswordState?.let { state: DialogAddNewPasswordState ->
+                    DialogAddNewPassword(state)
                 }
             }
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    showDialogAddPassword.value = true
+                    viewModel.handleAction(ScreenPasswordsViewModel.Action.OnAddNewPasswordButtonClicked)
                 }
             ) {
                 Icon(Icons.Default.Add, contentDescription = null)
@@ -94,7 +117,7 @@ fun ScreenPasswords(viewModel: ScreenPasswordsViewModel) {
 
 }
 
-@Preview()
+@Preview
 @Composable
 fun ListItemPreview(
     passwordEntity: PasswordEntity = PasswordEntity.stub(),
@@ -117,11 +140,11 @@ fun ListItem(passwordEntity: PasswordEntity, onClick: () -> Unit) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     style = TextStyle(color = Color.Gray),
-                    text = "Login:"
+                    text = "Name:"
                 )
                 Text(
                     modifier = Modifier.padding(start = 8.dp),
-                    text = passwordEntity.login
+                    text = passwordEntity.name
                 )
             }
             Row(modifier = Modifier
@@ -129,11 +152,11 @@ fun ListItem(passwordEntity: PasswordEntity, onClick: () -> Unit) {
                 .padding(top = 8.dp)) {
                 Text(
                     style = TextStyle(color = Color.Gray),
-                    text = "Password:"
+                    text = "Login:"
                 )
                 Text(
                     modifier = Modifier.padding(PaddingValues(start = 8.dp)),
-                    text = passwordEntity.password
+                    text = passwordEntity.login
                 )
             }
         }

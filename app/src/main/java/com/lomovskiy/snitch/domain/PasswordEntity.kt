@@ -1,8 +1,7 @@
 package com.lomovskiy.snitch.domain
 
-import kotlin.random.Random
-
 class PasswordEntity(
+    val name: String,
     val login: String,
     val password: String
 ) {
@@ -11,8 +10,9 @@ class PasswordEntity(
 
         fun stub(): PasswordEntity {
             return PasswordEntity(
-                login = Random(5).nextInt().toString(),
-                password = Random(5).nextInt().toString()
+                name = "name",
+                login = "login",
+                password = "password"
             )
         }
 
