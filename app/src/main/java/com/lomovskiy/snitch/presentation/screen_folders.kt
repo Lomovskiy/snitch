@@ -5,10 +5,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 
 @Composable
-fun ScreenPasswords() {
+fun ScreenFolders() {
 
     Box {
-        Text(text = "Passwords")
+        Text(text = "Folders")
     }
 
 }

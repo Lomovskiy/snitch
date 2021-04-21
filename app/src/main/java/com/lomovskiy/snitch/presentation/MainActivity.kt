@@ -1,25 +1,28 @@
 package com.lomovskiy.snitch.presentation
 
 import android.os.Bundle
-import androidx.activity.compose.BackHandler
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.*
 import com.lomovskiy.snitch.R
 import com.lomovskiy.snitch.presentation.theme.SnitchTheme
 
-sealed class Screen(val route: String, @StringRes val name: Int) {
-    object Screen1 : Screen("screen1", R.string.screen_1_name)
-    object Screen2 : Screen("screen2", R.string.screen_2_name)
-    object Screen3 : Screen("screen3", R.string.screen_3_name)
+sealed class BottomNavRoot(val route: String, @StringRes val name: Int, val icon: ImageVector) {
+    object PasswordsRoot : BottomNavRoot("passwords", R.string.screen_passwords_name, Icons.Default.Build)
+    object FoldersRoot : BottomNavRoot("folders", R.string.screen_folders_name, Icons.Default.Favorite)
+    object SetttingsRoot : BottomNavRoot("settings", R.string.screen_settings_name, Icons.Default.Settings)
 }
 
 @ExperimentalComposeUiApi
@@ -44,7 +47,11 @@ fun AppPreview() {
 @Composable
 fun App() {
 
-    val navController = rememberNavController()
+    val navController = rememberNavController().apply {
+        addOnDestinationChangedListener { controller, destination, arguments ->
+            Log.d("App", destination.toString())
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -52,13 +59,13 @@ fun App() {
                 val navBackStackEntry = navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry.value?.arguments?.getString(KEY_ROUTE)
                 listOf(
-                    Screen.Screen1,
-                    Screen.Screen2,
-                    Screen.Screen3,
+                    BottomNavRoot.PasswordsRoot,
+                    BottomNavRoot.FoldersRoot,
+                    BottomNavRoot.SetttingsRoot
                 ).forEach { screen ->
                     BottomNavigationItem(
                         icon = {
-                            Icon(imageVector = Icons.Default.ExitToApp, contentDescription = "")
+                            Icon(imageVector = screen.icon, contentDescription = "")
                         },
                         label = {
                             Text(text = stringResource(id = screen.name))
@@ -75,33 +82,15 @@ fun App() {
             }
         }
     ) {
-        NavHost(navController = navController, startDestination = Screen.Screen1.route) {
-            composable(Screen.Screen1.route) {
-                Screen1(
-                    forward = {
-                        navController.navigate(Screen.Screen2.route)
-                    },
-                    back = {
-                        navController.popBackStack()
-                    }
-                )
+        NavHost(navController = navController, startDestination = BottomNavRoot.PasswordsRoot.route) {
+            composable(BottomNavRoot.PasswordsRoot.route) {
+                ScreenPasswords()
             }
-            composable(Screen.Screen2.route) {
-                Screen2(
-                    forward = {
-                        navController.navigate(Screen.Screen3.route)
-                    },
-                    back = {
-                        navController.popBackStack()
-                    }
-                )
+            composable(BottomNavRoot.FoldersRoot.route) {
+                ScreenFolders()
             }
-            composable(Screen.Screen3.route) {
-                Screen3(
-                    back = {
-                        navController.popBackStack()
-                    }
-                )
+            composable(BottomNavRoot.SetttingsRoot.route) {
+                ScreenSettings()
             }
         }
     }
