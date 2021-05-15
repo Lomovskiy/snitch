@@ -9,15 +9,11 @@ import com.lomovskiy.snitch.domain.repo.PasswordsRepo
 class AppLoader : Application() {
 
     companion object {
-        lateinit var interactor: PasswordsInteractor
-    }
 
-    private lateinit var passwordsRepo: PasswordsRepo
+        private val passwordsRepo: PasswordsRepo = PasswordsRepoImpl()
 
-    override fun onCreate() {
-        super.onCreate()
-        passwordsRepo = PasswordsRepoImpl()
-        interactor = PasswordsInteractorImpl(passwordsRepo)
+        val interactor: PasswordsInteractor = PasswordsInteractorImpl(passwordsRepo)
+
     }
 
 }
