@@ -11,15 +11,13 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModel
 import com.lomovskiy.snitch.presentation.AppViewModel
-import com.lomovskiy.snitch.presentation.redux.AppComponent
-import com.lomovskiy.snitch.presentation.redux.AppState
 
 @Composable
 fun ScreenPasswords(
@@ -27,7 +25,7 @@ fun ScreenPasswords(
     vm: AppViewModel
 ) {
 
-    val passwords = remember { mutableStateOf(vm.appState) }
+    val state = vm.getAppState().collectAsState()
 
     Scaffold(
         modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding()),
@@ -38,14 +36,16 @@ fun ScreenPasswords(
         }
     ) {
         LazyColumn {
-            items(passwords.value.passwords.size) { idx: Int ->
-                Text(text = passwords.value.passwords[idx])
+            items(state.value.passwords.size) { idx: Int ->
+                Text(text = state.value.passwords[idx])
             }
         }
     }
 
-    Box {
-        Text(text = "Passwords")
+    if (state.value.passwords.isEmpty()) {
+        Box {
+            Text(text = "Passwords")
+        }
     }
 
 }

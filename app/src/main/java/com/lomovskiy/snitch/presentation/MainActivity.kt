@@ -1,7 +1,6 @@
 package com.lomovskiy.snitch.presentation
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
@@ -12,22 +11,23 @@ import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collection.mutableVectorOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.navigation.compose.*
 import com.lomovskiy.snitch.R
 import com.lomovskiy.snitch.presentation.redux.AppAction
-import com.lomovskiy.snitch.presentation.redux.AppComponent
+import com.lomovskiy.snitch.presentation.redux.AppReducer
 import com.lomovskiy.snitch.presentation.redux.AppState
+import com.lomovskiy.snitch.presentation.redux.AppStore
 import com.lomovskiy.snitch.presentation.screen.ScreenFolders
 import com.lomovskiy.snitch.presentation.screen.ScreenPasswords
 import com.lomovskiy.snitch.presentation.screen.ScreenSettings
 import com.lomovskiy.snitch.presentation.theme.SnitchTheme
+import kotlinx.coroutines.flow.StateFlow
 
 sealed class BottomNavRoot(val route: String, @StringRes val name: Int, val icon: ImageVector) {
     object PasswordsRoot : BottomNavRoot("passwords", R.string.screen_passwords_name, Icons.Default.Build)
@@ -52,14 +52,22 @@ class MainActivity : AppCompatActivity() {
 
 class AppViewModel : ViewModel() {
 
-    val appState: AppState = AppComponent.appStore.getState()
+    private val appStore: AppStore = AppStore(
+        initialState = AppState(emptyList()),
+//            middlewares = emptyList(),
+        reducers = listOf(AppReducer)
+    )
+
+    fun getAppState(): StateFlow<AppState> {
+        return appStore.getState()
+    }
 
     fun onAddPassword() {
-        AppComponent.appStore.dispatch(AppAction.AddPassword)
+        appStore.dispatch(AppAction.AddPassword)
     }
 
     fun onDeletePassword() {
-        AppComponent.appStore.dispatch(AppAction.DeletePassword)
+        appStore.dispatch(AppAction.DeletePassword)
     }
 
 }
