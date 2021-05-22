@@ -25,7 +25,9 @@ object Config {
         const val kotlin = "1.4.32"
         const val lifecycle = "2.3.1"
         const val lifecycleViewModelCompose = "1.0.0-alpha05"
+
         const val hilt = "1.0.0"
+        const val hiltNavigationCompose = "1.0.0-alpha02"
         const val hiltCompiler = "2.35"
 
     }
@@ -46,7 +48,10 @@ object Config {
             "androidx.compose.material:material:${Versions.compose}"
         )
 
-        const val hilt = "com.google.dagger:hilt-android:${Versions.hilt}"
+        val hilt = arrayOf(
+            "com.google.dagger:hilt-android:${Versions.hilt}",
+            "androidx.hilt:hilt-navigation-compose:${Versions.hiltNavigationCompose}"
+        )
         const val hiltCompiler = "com.google.dagger:hilt-android-compiler:${Versions.hiltCompiler}"
 
     }

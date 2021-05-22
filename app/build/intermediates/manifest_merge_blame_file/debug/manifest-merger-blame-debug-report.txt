@@ -17,7 +17,7 @@
 13        android:allowBackup="true"
 13-->C:\Users\a\Documents\snitch\app\src\main\AndroidManifest.xml:7:9-35
 14        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-14-->[androidx.core:core:1.5.0-beta01] C:\Users\a\Documents\snitch\.gradle\caches\transforms-3\d64cea73ad3faaa1cb15474f274d77d3\transformed\core-1.5.0-beta01\AndroidManifest.xml:24:18-86
+14-->[androidx.core:core:1.5.0-beta01] C:\Users\a\Documents\snitch\.gradle\caches\transforms-3\53e5564485ee26a846a0fe5781078207\transformed\core-1.5.0-beta01\AndroidManifest.xml:24:18-86
 15        android:debuggable="true"
 16        android:icon="@mipmap/ic_launcher"
 16-->C:\Users\a\Documents\snitch\app\src\main\AndroidManifest.xml:8:9-43
@@ -52,11 +52,11 @@
 31            </intent-filter>
 32        </activity>
 33        <activity
-33-->[androidx.compose.ui:ui-tooling:1.0.0-beta07] C:\Users\a\Documents\snitch\.gradle\caches\transforms-3\654462f5a1551a4c234d9ce31247e2c3\transformed\jetified-ui-tooling-1.0.0-beta07\AndroidManifest.xml:25:9-27:39
+33-->[androidx.compose.ui:ui-tooling:1.0.0-beta07] C:\Users\a\Documents\snitch\.gradle\caches\transforms-3\dc6610bede227e2c1edda0e6dae7130f\transformed\jetified-ui-tooling-1.0.0-beta07\AndroidManifest.xml:25:9-27:39
 34            android:name="androidx.compose.ui.tooling.preview.PreviewActivity"
-34-->[androidx.compose.ui:ui-tooling:1.0.0-beta07] C:\Users\a\Documents\snitch\.gradle\caches\transforms-3\654462f5a1551a4c234d9ce31247e2c3\transformed\jetified-ui-tooling-1.0.0-beta07\AndroidManifest.xml:26:13-79
+34-->[androidx.compose.ui:ui-tooling:1.0.0-beta07] C:\Users\a\Documents\snitch\.gradle\caches\transforms-3\dc6610bede227e2c1edda0e6dae7130f\transformed\jetified-ui-tooling-1.0.0-beta07\AndroidManifest.xml:26:13-79
 35            android:exported="true" />
-35-->[androidx.compose.ui:ui-tooling:1.0.0-beta07] C:\Users\a\Documents\snitch\.gradle\caches\transforms-3\654462f5a1551a4c234d9ce31247e2c3\transformed\jetified-ui-tooling-1.0.0-beta07\AndroidManifest.xml:27:13-36
+35-->[androidx.compose.ui:ui-tooling:1.0.0-beta07] C:\Users\a\Documents\snitch\.gradle\caches\transforms-3\dc6610bede227e2c1edda0e6dae7130f\transformed\jetified-ui-tooling-1.0.0-beta07\AndroidManifest.xml:27:13-36
 36    </application>
 37
 38</manifest>

@@ -38,7 +38,9 @@ android {
 
 dependencies {
 
-    implementation(com.lomovskiy.snitch.Config.Deps.hilt)
+    com.lomovskiy.snitch.Config.Deps.hilt.forEach {
+        implementation(it)
+    }
     kapt(com.lomovskiy.snitch.Config.Deps.hiltCompiler)
 
     com.lomovskiy.snitch.Config.Deps.lifecycle.forEach {

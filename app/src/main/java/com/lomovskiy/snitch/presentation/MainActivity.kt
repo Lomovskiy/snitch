@@ -16,11 +16,13 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
 import com.lomovskiy.snitch.R
 import com.lomovskiy.snitch.presentation.redux.AppAction
 import com.lomovskiy.snitch.presentation.redux.AppReducer
@@ -28,11 +30,13 @@ import com.lomovskiy.snitch.presentation.redux.AppState
 import com.lomovskiy.snitch.presentation.redux.AppStore
 import com.lomovskiy.snitch.presentation.screen.ScreenFolders
 import com.lomovskiy.snitch.presentation.screen.ScreenPasswords
+import com.lomovskiy.snitch.presentation.screen.ScreenPasswordsViewModel
 import com.lomovskiy.snitch.presentation.screen.ScreenSettings
 import com.lomovskiy.snitch.presentation.theme.SnitchTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.StateFlow
 
-interface NavigationCommand {
+interface Screen {
 
     val destination: String
 
@@ -40,19 +44,21 @@ interface NavigationCommand {
 
 object NavigationDirections {
 
-    val passwords = object : NavigationCommand {
+    val flowPasswords = object : Flow {
 
-        override val destination: String = "passwords"
+        override val destination = "passwords"
+
+        override val root = "root_passwords"
 
     }
 
-    val folders = object : NavigationCommand {
+    val folders = object : Screen {
 
         override val destination: String = "folders"
 
     }
 
-    val settings = object : NavigationCommand {
+    val settings = object : Screen {
 
         override val destination: String = "settings"
 
@@ -60,13 +66,20 @@ object NavigationDirections {
 
 }
 
-sealed class BottomNavRoot(val route: String, @StringRes val name: Int, val icon: ImageVector) {
-    object PasswordsRoot : BottomNavRoot("passwords", R.string.screen_passwords_name, Icons.Default.Build)
-    object FoldersRoot : BottomNavRoot("folders", R.string.screen_folders_name, Icons.Default.Favorite)
-    object SettingsRoot : BottomNavRoot("settings", R.string.screen_settings_name, Icons.Default.Settings)
+interface Flow : Screen {
+
+    val root: String
+
+}
+
+sealed class BottomNavRoot(val screen: Screen, @StringRes val name: Int, val icon: ImageVector) {
+    object PasswordsRoot : BottomNavRoot(NavigationDirections.flowPasswords, R.string.screen_passwords_name, Icons.Default.Build)
+    object FoldersRoot : BottomNavRoot(NavigationDirections.folders, R.string.screen_folders_name, Icons.Default.Favorite)
+    object SettingsRoot : BottomNavRoot(NavigationDirections.settings, R.string.screen_settings_name, Icons.Default.Settings)
 }
 
 @ExperimentalComposeUiApi
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private val vm: AppViewModel by viewModels()
@@ -131,9 +144,9 @@ fun App(viewModel: AppViewModel) {
                         label = {
                             Text(text = stringResource(id = screen.name))
                         },
-                        selected = currentRoute == screen.route,
+                        selected = currentRoute == screen.screen.destination,
                         onClick = {
-                            navController.navigate(screen.route) {
+                            navController.navigate(screen.screen.destination) {
                                 popUpTo(navController.graph.startDestinationId)
                                 launchSingleTop = true
                             }
@@ -143,9 +156,18 @@ fun App(viewModel: AppViewModel) {
             }
         }
     ) { paddingValues ->
-        NavHost(navController = navController, startDestination = NavigationDirections.passwords.destination) {
-            composable(NavigationDirections.passwords.destination) {
-                ScreenPasswords(paddingValues = paddingValues)
+        NavHost(
+            navController = navController,
+            startDestination = NavigationDirections.flowPasswords.root
+        ) {
+            navigation(
+                startDestination = NavigationDirections.flowPasswords.destination,
+                route = NavigationDirections.flowPasswords.root
+            ) {
+                composable(NavigationDirections.flowPasswords.destination) {
+                    val vm: ScreenPasswordsViewModel = hiltViewModel()
+                    ScreenPasswords(paddingValues = paddingValues, vm = vm)
+                }
             }
             composable(NavigationDirections.folders.destination) {
                 ScreenFolders()

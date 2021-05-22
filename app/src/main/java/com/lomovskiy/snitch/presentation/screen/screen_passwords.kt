@@ -52,7 +52,7 @@ data class ScreenPasswordsState(
 @Composable
 fun ScreenPasswords(
     paddingValues: PaddingValues,
-    vm: ScreenPasswordsViewModel = viewModel()
+    vm: ScreenPasswordsViewModel
 ) {
 
     val state = vm.getState().collectAsState()
