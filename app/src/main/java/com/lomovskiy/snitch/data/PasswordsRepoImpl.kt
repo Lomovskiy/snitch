@@ -4,8 +4,9 @@ import com.lomovskiy.snitch.domain.PasswordEntity
 import com.lomovskiy.snitch.domain.repo.PasswordsRepo
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class PasswordsRepoImpl(
+class PasswordsRepoImpl @Inject constructor(
     private val dispatcher: CoroutineDispatcher
 ) : PasswordsRepo {
 

@@ -11,15 +11,16 @@ import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltNavGraphViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.lomovskiy.snitch.R
 import com.lomovskiy.snitch.presentation.redux.AppAction
 import com.lomovskiy.snitch.presentation.redux.AppReducer
@@ -27,7 +28,6 @@ import com.lomovskiy.snitch.presentation.redux.AppState
 import com.lomovskiy.snitch.presentation.redux.AppStore
 import com.lomovskiy.snitch.presentation.screen.ScreenFolders
 import com.lomovskiy.snitch.presentation.screen.ScreenPasswords
-import com.lomovskiy.snitch.presentation.screen.ScreenPasswordsViewModel
 import com.lomovskiy.snitch.presentation.screen.ScreenSettings
 import com.lomovskiy.snitch.presentation.theme.SnitchTheme
 import kotlinx.coroutines.flow.StateFlow
@@ -116,8 +116,8 @@ fun App(viewModel: AppViewModel) {
 
     Scaffold(
         bottomBar = {
-            val navBackStackEntry = navController.currentBackStackEntryAsState()
-            val currentRoute = navBackStackEntry.value?.arguments?.getString(KEY_ROUTE)
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = navBackStackEntry?.destination?.route
             BottomNavigation {
                 listOf(
                     BottomNavRoot.PasswordsRoot,
@@ -134,7 +134,7 @@ fun App(viewModel: AppViewModel) {
                         selected = currentRoute == screen.route,
                         onClick = {
                             navController.navigate(screen.route) {
-                                popUpTo = navController.graph.startDestination
+                                popUpTo(navController.graph.startDestinationId)
                                 launchSingleTop = true
                             }
                         }
@@ -145,9 +145,7 @@ fun App(viewModel: AppViewModel) {
     ) { paddingValues ->
         NavHost(navController = navController, startDestination = NavigationDirections.passwords.destination) {
             composable(NavigationDirections.passwords.destination) {
-                ScreenPasswords(paddingValues = paddingValues, navController.hiltNavGraphViewModel(
-                    route = NavigationDirections.passwords.destination
-                ))
+                ScreenPasswords(paddingValues = paddingValues)
             }
             composable(NavigationDirections.folders.destination) {
                 ScreenFolders()

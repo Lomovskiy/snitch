@@ -935,6 +935,7 @@
     <item name="action_menu_divider" type="id"/>
     <item name="action_menu_presenter" type="id"/>
     <item name="androidx_compose_ui_view_composition_context" type="id"/>
+    <item name="fragment_container_view_tag" type="id"/>
     <item name="ghost_view" type="id"/>
     <item name="ghost_view_holder" type="id"/>
     <item name="home" type="id"/>
@@ -961,6 +962,7 @@
     <item name="selection_type" type="id"/>
     <item name="snackbar_action" type="id"/>
     <item name="snackbar_text" type="id"/>
+    <item name="special_effects_controller_view_tag" type="id"/>
     <item name="split_action_bar" type="id"/>
     <item name="tag_accessibility_actions" type="id"/>
     <item name="tag_accessibility_clickable_spans" type="id"/>
@@ -995,6 +997,7 @@
     <id name="view_tree_lifecycle_owner"/>
     <id name="view_tree_saved_state_registry_owner"/>
     <id name="view_tree_view_model_store_owner"/>
+    <item name="visible_removing_fragment_view_tag" type="id"/>
     <item name="wrapped_composition_tag" type="id"/>
     <integer name="abc_config_activityDefaultDur">220</integer>
     <integer name="abc_config_activityShortDur">150</integer>
@@ -6526,6 +6529,15 @@
     <!-- Do not expose publicly, used by ForegroundLinearLayout but never set by any style.  -->
     <attr format="boolean" name="foregroundInsidePadding"/>
   </declare-styleable>
+    <declare-styleable name="Fragment">
+        <attr name="android:name"/>
+        <attr name="android:id"/>
+        <attr name="android:tag"/>
+    </declare-styleable>
+    <declare-styleable name="FragmentContainerView">
+        <attr name="android:name"/>
+        <attr name="android:tag"/>
+    </declare-styleable>
     <declare-styleable name="GradientColor">
         <!-- Start color of the gradient. -->
         <attr name="android:startColor"/>
@@ -7071,8 +7083,10 @@
         <attr name="android:id"/>
         <attr format="reference" name="destination"/>
         <attr format="boolean" name="launchSingleTop"/>
+        <attr format="boolean" name="restoreState"/>
         <attr format="reference" name="popUpTo"/>
         <attr format="boolean" name="popUpToInclusive"/>
+        <attr format="boolean" name="popUpToSaveState"/>
         <attr format="reference" name="enterAnim"/>
         <attr format="reference" name="exitAnim"/>
         <attr format="reference" name="popEnterAnim"/>
@@ -7156,6 +7170,7 @@
   </declare-styleable>
     <declare-styleable name="Navigator">
         <attr name="android:id"/>
+        <attr format="string" name="route"/>
         <attr name="android:label"/>
     </declare-styleable>
     <declare-styleable name="OnClick"><attr name="targetId"/><attr name="clickAction">

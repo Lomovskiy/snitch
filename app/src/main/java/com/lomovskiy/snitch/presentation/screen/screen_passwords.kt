@@ -15,6 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lomovskiy.snitch.domain.PasswordEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,7 +52,7 @@ data class ScreenPasswordsState(
 @Composable
 fun ScreenPasswords(
     paddingValues: PaddingValues,
-    vm: ScreenPasswordsViewModel
+    vm: ScreenPasswordsViewModel = viewModel()
 ) {
 
     val state = vm.getState().collectAsState()
