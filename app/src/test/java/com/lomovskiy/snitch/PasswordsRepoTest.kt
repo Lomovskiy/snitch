@@ -46,4 +46,17 @@ class PasswordsRepoTest {
         assertTrue(passwordEntity != null)
     }
 
+    @Test
+    fun getAll_returnEmptyList_whenPasswordsIsEmpty() = runBlockingTest {
+        val passwords = sut.getAll()
+        assertTrue(passwords.isEmpty())
+    }
+
+    @Test
+    fun getAll_notReturnEmptyList_whenPasswordsIsNotEmpty() = runBlockingTest {
+        sut.create(PasswordEntity.stub())
+        val passwords = sut.getAll()
+        assertTrue(passwords.isNotEmpty())
+    }
+
 }

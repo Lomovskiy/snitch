@@ -5,7 +5,9 @@ import com.lomovskiy.snitch.domain.repo.PasswordsRepo
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class PasswordsRepoImpl @Inject constructor(
     private val dispatcher: CoroutineDispatcher
 ) : PasswordsRepo {
@@ -23,6 +25,12 @@ class PasswordsRepoImpl @Inject constructor(
             return@withContext cache.find { passwordEntity: PasswordEntity ->
                 passwordEntity.id == id
             }
+        }
+    }
+
+    override suspend fun getAll(): List<PasswordEntity> {
+        return withContext(dispatcher) {
+            return@withContext cache
         }
     }
 

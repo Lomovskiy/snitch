@@ -12,26 +12,18 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewModelScope
 import com.lomovskiy.snitch.domain.PasswordEntity
+import com.lomovskiy.snitch.domain.repo.PasswordsRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-@HiltViewModel
-class ScreenPasswordsViewModel @Inject constructor() : ViewModel() {
-
-    private val state = MutableStateFlow(ScreenPasswordsState.empty())
-
-    fun getState(): StateFlow<ScreenPasswordsState> {
-        return state
-    }
-
-}
 
 data class ScreenPasswordsState(
     val passwords: List<PasswordEntity>
@@ -41,10 +33,43 @@ data class ScreenPasswordsState(
 
         fun empty(): ScreenPasswordsState {
             return ScreenPasswordsState(
-                passwords = emptyList<PasswordEntity>()
+                passwords = emptyList()
             )
         }
 
+    }
+
+}
+
+@HiltViewModel
+class ScreenPasswordsViewModel @Inject constructor(
+    private val passwordsRepo: PasswordsRepo
+) : ViewModel() {
+
+    private var state = MutableStateFlow(ScreenPasswordsState.empty())
+
+    init {
+        viewModelScope.launch {
+            fetch()
+        }
+    }
+
+    fun getState(): StateFlow<ScreenPasswordsState> {
+        return state
+    }
+
+    fun addNewPassword() {
+        viewModelScope.launch {
+            passwordsRepo.create(PasswordEntity.stub())
+            fetch()
+        }
+    }
+
+    private suspend fun fetch() {
+        viewModelScope.launch {
+            val passwords = passwordsRepo.getAll()
+            state.value = state.value.copy(passwords = passwords)
+        }
     }
 
 }
@@ -55,24 +80,24 @@ fun ScreenPasswords(
     vm: ScreenPasswordsViewModel
 ) {
 
-    val state = vm.getState().collectAsState()
+    val state by vm.getState().collectAsState()
 
     Scaffold(
         modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding()),
         floatingActionButton = {
             ButtonAddNewPassword {
-//                vm.onAddPassword()
+                vm.addNewPassword()
             }
         }
     ) {
         LazyColumn {
-            items(state.value.passwords.size) { idx: Int ->
-                Text(text = state.value.passwords[idx].password)
+            items(state.passwords.size) { idx: Int ->
+                Text(text = state.passwords[idx].id)
             }
         }
     }
 
-    if (state.value.passwords.isEmpty()) {
+    if (state.passwords.isEmpty()) {
         Box {
             Text(text = "Passwords")
         }

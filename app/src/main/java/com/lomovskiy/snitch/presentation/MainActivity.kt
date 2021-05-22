@@ -28,10 +28,7 @@ import com.lomovskiy.snitch.presentation.redux.AppAction
 import com.lomovskiy.snitch.presentation.redux.AppReducer
 import com.lomovskiy.snitch.presentation.redux.AppState
 import com.lomovskiy.snitch.presentation.redux.AppStore
-import com.lomovskiy.snitch.presentation.screen.ScreenFolders
-import com.lomovskiy.snitch.presentation.screen.ScreenPasswords
-import com.lomovskiy.snitch.presentation.screen.ScreenPasswordsViewModel
-import com.lomovskiy.snitch.presentation.screen.ScreenSettings
+import com.lomovskiy.snitch.presentation.screen.*
 import com.lomovskiy.snitch.presentation.theme.SnitchTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.StateFlow
@@ -170,10 +167,12 @@ fun App(viewModel: AppViewModel) {
                 }
             }
             composable(NavigationDirections.folders.destination) {
-                ScreenFolders()
+                val vm: ScreenFoldersViewModel = hiltViewModel()
+                ScreenFolders(vm)
             }
             composable(NavigationDirections.settings.destination) {
-                ScreenSettings()
+                val vm: ScreenSettingsViewModel = hiltViewModel()
+                ScreenSettings(vm)
             }
         }
     }
