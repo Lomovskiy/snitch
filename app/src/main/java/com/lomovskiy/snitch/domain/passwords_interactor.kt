@@ -2,6 +2,7 @@ package com.lomovskiy.snitch.domain
 
 import com.lomovskiy.snitch.domain.repo.PasswordsRepo
 import kotlinx.coroutines.flow.StateFlow
+import java.util.*
 
 interface PasswordsInteractor {
 
@@ -20,7 +21,7 @@ class PasswordsInteractorImpl(
     }
 
     override fun subscribeOnPasswordsUpdates(): StateFlow<List<PasswordEntity>> {
-        return passwordsRepo.readAllFlow()
+        TODO()
     }
 
 }

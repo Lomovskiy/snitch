@@ -7,6 +7,8 @@ interface PasswordsRepo {
 
     suspend fun create(entity: PasswordEntity)
 
-    fun readAllFlow(): StateFlow<List<PasswordEntity>>
+    suspend fun getById(id: String): PasswordEntity?
+
+//    fun readAllFlow(): StateFlow<List<PasswordEntity>>
 
 }

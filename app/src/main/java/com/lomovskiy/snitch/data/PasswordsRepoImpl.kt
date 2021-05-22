@@ -2,19 +2,27 @@ package com.lomovskiy.snitch.data
 
 import com.lomovskiy.snitch.domain.PasswordEntity
 import com.lomovskiy.snitch.domain.repo.PasswordsRepo
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 
-class PasswordsRepoImpl : PasswordsRepo {
+class PasswordsRepoImpl(
+    private val dispatcher: CoroutineDispatcher
+) : PasswordsRepo {
 
-    private val cache = MutableStateFlow<List<PasswordEntity>>(emptyList())
+    private val cache = mutableListOf<PasswordEntity>()
 
     override suspend fun create(entity: PasswordEntity) {
-        cache.emit(cache.value.toMutableList().apply { add(entity) })
+        withContext(dispatcher) {
+            cache.add(entity)
+        }
     }
 
-    override fun readAllFlow(): StateFlow<List<PasswordEntity>> {
-        return cache
+    override suspend fun getById(id: String): PasswordEntity? {
+        return withContext(dispatcher) {
+            return@withContext cache.find { passwordEntity: PasswordEntity ->
+                passwordEntity.id == id
+            }
+        }
     }
 
 }
