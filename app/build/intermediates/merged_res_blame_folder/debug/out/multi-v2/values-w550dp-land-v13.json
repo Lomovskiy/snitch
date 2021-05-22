@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "/Users/user/Documents/snitch/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-w550dp-land-v13/values-w550dp-land-v13.xml",
+            "map": [
+                {
+                    "source": "/Users/user/.gradle/caches/transforms-3/5431866124f91069c2864dc2624b38e9/transformed/material-1.3.0/res/values-w550dp-land-v13/values-w550dp-land-v13.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "51",
+                        "endOffsets": "102"
+                    }
+                }
+            ]
+        }
+    ]
+}

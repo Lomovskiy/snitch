@@ -1,0 +1,2 @@
+com/lomovskiy/snitch/test/BuildConfig.java
+ com.lomovskiy.snitch.test.BuildConfig

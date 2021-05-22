@@ -12,32 +12,61 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModel
-import com.lomovskiy.snitch.presentation.AppViewModel
+import com.lomovskiy.snitch.domain.PasswordEntity
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
+
+@HiltViewModel
+class ScreenPasswordsViewModel @Inject constructor() : ViewModel() {
+
+    private val state = MutableStateFlow(ScreenPasswordsState.empty())
+
+    fun getState(): StateFlow<ScreenPasswordsState> {
+        return state
+    }
+
+}
+
+data class ScreenPasswordsState(
+    val passwords: List<PasswordEntity>
+) {
+
+    companion object {
+
+        fun empty(): ScreenPasswordsState {
+            return ScreenPasswordsState(
+                passwords = emptyList<PasswordEntity>()
+            )
+        }
+
+    }
+
+}
 
 @Composable
 fun ScreenPasswords(
     paddingValues: PaddingValues,
-    vm: AppViewModel
+    vm: ScreenPasswordsViewModel
 ) {
 
-    val state = vm.getAppState().collectAsState()
+    val state = vm.getState().collectAsState()
 
     Scaffold(
         modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding()),
         floatingActionButton = {
             ButtonAddNewPassword {
-                vm.onAddPassword()
+//                vm.onAddPassword()
             }
         }
     ) {
         LazyColumn {
             items(state.value.passwords.size) { idx: Int ->
-                Text(text = state.value.passwords[idx])
+                Text(text = state.value.passwords[idx].password)
             }
         }
     }
@@ -64,5 +93,3 @@ fun ButtonAddNewPassword(onClick: () -> Unit) {
         Icon(imageVector = Icons.Default.Add, contentDescription = null)
     }
 }
-
-class ScreenPasswordsViewModel : ViewModel()
