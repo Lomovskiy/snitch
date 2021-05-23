@@ -1,39 +1,44 @@
 package com.lomovskiy.snitch.presentation.screen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lomovskiy.snitch.domain.PasswordEntity
 import com.lomovskiy.snitch.domain.repo.PasswordsRepo
+import com.lomovskiy.snitch.presentation.DialogAddNewPasswordState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class ScreenPasswordsState(
-    val passwords: List<PasswordEntity>
+    val passwords: List<PasswordEntity>,
+    val isShowingAddNewPasswordDialog: Boolean
 ) {
 
     companion object {
 
         fun empty(): ScreenPasswordsState {
             return ScreenPasswordsState(
-                passwords = emptyList()
+                passwords = emptyList(),
+                isShowingAddNewPasswordDialog = false
             )
         }
 
@@ -46,48 +51,58 @@ class ScreenPasswordsViewModel @Inject constructor(
     private val passwordsRepo: PasswordsRepo
 ) : ViewModel() {
 
-    private var state = MutableStateFlow(ScreenPasswordsState.empty())
+    private val state = MutableStateFlow(ScreenPasswordsState.empty())
 
     init {
+
         viewModelScope.launch {
-            fetch()
+            passwordsRepo.getAll().collect {
+                state.value = state.value.copy(passwords = it)
+            }
         }
+
     }
 
-    fun getState(): StateFlow<ScreenPasswordsState> {
+    fun getState(): Flow<ScreenPasswordsState> {
         return state
     }
 
     fun addNewPassword() {
         viewModelScope.launch {
-            passwordsRepo.create(PasswordEntity.stub())
-            fetch()
+            state.value = state.value.copy(isShowingAddNewPasswordDialog = true)
         }
     }
 
-    private suspend fun fetch() {
+    fun onButtonConfirmPressed() {
         viewModelScope.launch {
-            val passwords = passwordsRepo.getAll()
-            state.value = state.value.copy(passwords = passwords)
+            state.value = state.value.copy(isShowingAddNewPasswordDialog = false)
         }
     }
 
 }
 
+@Preview
 @Composable
-fun ScreenPasswords(
-    paddingValues: PaddingValues,
-    vm: ScreenPasswordsViewModel
+fun ScreenPasswordsContentPreview() {
+    ScreenPasswordsContent(
+        padding = 16.dp,
+        state = ScreenPasswordsState.empty(),
+        onAddNewPassword = {},
+        onButtonConfirmPressed = {}
+    )
+}
+
+@Composable
+fun ScreenPasswordsContent(
+    padding: Dp,
+    state: ScreenPasswordsState,
+    onAddNewPassword: () -> Unit,
+    onButtonConfirmPressed: () -> Unit
 ) {
-
-    val state by vm.getState().collectAsState()
-
     Scaffold(
-        modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding()),
+        modifier = Modifier.padding(bottom = padding),
         floatingActionButton = {
-            ButtonAddNewPassword {
-                vm.addNewPassword()
-            }
+            ButtonAddNewPassword(onAddNewPassword)
         }
     ) {
         LazyColumn {
@@ -103,12 +118,41 @@ fun ScreenPasswords(
         }
     }
 
+    if (state.isShowingAddNewPasswordDialog) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = {
+                Text(text = "Add new password")
+            },
+            text = {
+                Text("Here is a text ")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = onButtonConfirmPressed) {
+                    Text("ADD")
+                }
+            }
+        )
+    }
+
 }
 
-@Preview
 @Composable
-fun ButtonAddNewPasswordPreview() {
-    ButtonAddNewPassword {}
+fun ScreenPasswords(
+    paddingValues: PaddingValues,
+    vm: ScreenPasswordsViewModel
+) {
+
+    val state by vm.getState().collectAsState(initial = ScreenPasswordsState.empty())
+
+    ScreenPasswordsContent(
+        padding = paddingValues.calculateBottomPadding(),
+        state = state,
+        onAddNewPassword = vm::addNewPassword,
+        onButtonConfirmPressed = vm::onButtonConfirmPressed
+    )
+
 }
 
 @Composable
@@ -119,3 +163,6 @@ fun ButtonAddNewPassword(onClick: () -> Unit) {
         Icon(imageVector = Icons.Default.Add, contentDescription = null)
     }
 }
+
+@Composable
+fun

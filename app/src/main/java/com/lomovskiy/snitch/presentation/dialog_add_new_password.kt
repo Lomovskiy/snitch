@@ -34,9 +34,9 @@ class DialogAddNewPasswordState(
 
         fun empty(): DialogAddNewPasswordState {
             return DialogAddNewPasswordState(
-                nameValue = "",
-                loginValue = "",
-                passwordValue = "",
+                nameValue = "nameValue",
+                loginValue = "loginValue",
+                passwordValue = "passwordValue",
                 onPositiveButtonClick = { s1, s2, s3 -> },
                 onNegativeButtonClick = {}
             )

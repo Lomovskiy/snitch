@@ -9,7 +9,7 @@ interface PasswordsRepo {
 
     suspend fun getById(id: String): PasswordEntity?
 
-    suspend fun getAll(): List<PasswordEntity>
+    fun getAll(): StateFlow<List<PasswordEntity>>
 
 //    fun readAllFlow(): StateFlow<List<PasswordEntity>>
 
