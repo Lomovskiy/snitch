@@ -1,5 +1,6 @@
 package com.lomovskiy.snitch.presentation.screen.passwords
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
 import androidx.compose.material.Text
@@ -10,11 +11,13 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun CardPasswordEntry(
-    name: String
+    name: String,
+    onClick: () -> Unit = {}
 ) {
 
     Card(
         modifier = Modifier
+            .clickable(onClick = onClick)
             .fillMaxWidth()
             .wrapContentHeight()
             .padding(8.dp),
