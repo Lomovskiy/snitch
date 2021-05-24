@@ -20,12 +20,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lomovskiy.snitch.domain.PasswordEntity
 import com.lomovskiy.snitch.domain.repo.PasswordsRepo
-import com.lomovskiy.snitch.presentation.DialogAddNewPasswordState
+import com.lomovskiy.snitch.presentation.DialogAddNewPassword
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 data class ScreenPasswordsState(
@@ -73,7 +74,14 @@ class ScreenPasswordsViewModel @Inject constructor(
         }
     }
 
-    fun onButtonConfirmPressed() {
+    fun newPasswordAdded(name: String, login: String, password: String) {
+        viewModelScope.launch {
+            state.value = state.value.copy(isShowingAddNewPasswordDialog = false)
+            passwordsRepo.create(PasswordEntity(UUID.randomUUID().toString(), name, login, password))
+        }
+    }
+
+    fun dialogAddNewPasswordClose() {
         viewModelScope.launch {
             state.value = state.value.copy(isShowingAddNewPasswordDialog = false)
         }
@@ -88,7 +96,8 @@ fun ScreenPasswordsContentPreview() {
         padding = 16.dp,
         state = ScreenPasswordsState.empty(),
         onAddNewPassword = {},
-        onButtonConfirmPressed = {}
+        newPasswordAdded = { name: String, login: String, password: String -> },
+        dialogAddNewPasswordClose = {}
     )
 }
 
@@ -97,7 +106,8 @@ fun ScreenPasswordsContent(
     padding: Dp,
     state: ScreenPasswordsState,
     onAddNewPassword: () -> Unit,
-    onButtonConfirmPressed: () -> Unit
+    newPasswordAdded: (name: String, login: String, password: String) -> Unit,
+    dialogAddNewPasswordClose: () -> Unit
 ) {
     Scaffold(
         modifier = Modifier.padding(bottom = padding),
@@ -119,20 +129,9 @@ fun ScreenPasswordsContent(
     }
 
     if (state.isShowingAddNewPasswordDialog) {
-        AlertDialog(
-            onDismissRequest = {},
-            title = {
-                Text(text = "Add new password")
-            },
-            text = {
-                Text("Here is a text ")
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = onButtonConfirmPressed) {
-                    Text("ADD")
-                }
-            }
+        DialogAddNewPassword(
+            onPositiveButtonClick = newPasswordAdded,
+            onNegativeButtonClick = dialogAddNewPasswordClose
         )
     }
 
@@ -150,7 +149,8 @@ fun ScreenPasswords(
         padding = paddingValues.calculateBottomPadding(),
         state = state,
         onAddNewPassword = vm::addNewPassword,
-        onButtonConfirmPressed = vm::onButtonConfirmPressed
+        newPasswordAdded = vm::newPasswordAdded,
+        dialogAddNewPasswordClose = vm::dialogAddNewPasswordClose
     )
 
 }
@@ -163,6 +163,3 @@ fun ButtonAddNewPassword(onClick: () -> Unit) {
         Icon(imageVector = Icons.Default.Add, contentDescription = null)
     }
 }
-
-@Composable
-fun

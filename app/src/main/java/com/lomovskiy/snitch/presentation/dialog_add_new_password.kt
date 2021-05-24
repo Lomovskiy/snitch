@@ -2,9 +2,9 @@ package com.lomovskiy.snitch.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -15,46 +15,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import java.util.*
 
-@Preview
 @Composable
-fun AddNewPasswordDialogPreview() {
-    DialogAddNewPassword(DialogAddNewPasswordState.empty())
-}
-
-class DialogAddNewPasswordState(
-    val nameValue: String,
-    val loginValue: String,
-    val passwordValue: String,
-    val onPositiveButtonClick: (name: String, login: String, password: String) -> Unit,
-    val onNegativeButtonClick: () -> Unit
+fun DialogAddNewPassword(
+    onPositiveButtonClick: (name: String, login: String, password: String) -> Unit,
+    onNegativeButtonClick: () -> Unit
 ) {
 
-    companion object {
-
-        fun empty(): DialogAddNewPasswordState {
-            return DialogAddNewPasswordState(
-                nameValue = "nameValue",
-                loginValue = "loginValue",
-                passwordValue = "passwordValue",
-                onPositiveButtonClick = { s1, s2, s3 -> },
-                onNegativeButtonClick = {}
-            )
-        }
-
-    }
-
-}
-
-@Composable
-fun DialogAddNewPassword(state: DialogAddNewPasswordState) {
-
-    val nameFieldState = rememberSaveable { mutableStateOf(state.nameValue) }
-    val loginFieldState = rememberSaveable { mutableStateOf(state.loginValue) }
-    val passwordFieldState = rememberSaveable { mutableStateOf(state.passwordValue) }
+    val nameFieldState = rememberSaveable { mutableStateOf("") }
+    val loginFieldState = rememberSaveable { mutableStateOf("") }
+    val passwordFieldState = rememberSaveable { mutableStateOf("") }
 
     Dialog(
-        onDismissRequest = state.onNegativeButtonClick,
+        onDismissRequest = onNegativeButtonClick,
     ) {
         Column(
             modifier = Modifier
@@ -62,6 +37,7 @@ fun DialogAddNewPassword(state: DialogAddNewPasswordState) {
                 .padding(16.dp)
         ) {
             OutlinedTextField(
+                modifier = Modifier.fillMaxWidth().wrapContentHeight(),
                 value = nameFieldState.value,
                 label = {
                     Text(text = "Name")
@@ -71,6 +47,7 @@ fun DialogAddNewPassword(state: DialogAddNewPasswordState) {
                 }
             )
             OutlinedTextField(
+                modifier = Modifier.fillMaxWidth().wrapContentHeight(),
                 value = loginFieldState.value,
                 label = {
                     Text(text = "Login")
@@ -80,10 +57,22 @@ fun DialogAddNewPassword(state: DialogAddNewPasswordState) {
                 }
             )
             OutlinedTextField(
+                modifier = Modifier.fillMaxWidth().wrapContentHeight(),
                 value = passwordFieldState.value,
                 label = {
                     Text(text = "Password")
                 },
+                trailingIcon = {
+                    IconButton(
+                        modifier = Modifier.wrapContentSize(),
+                        onClick = {
+                            passwordFieldState.value = UUID.randomUUID().toString()
+                        }
+                    ) {
+                        Icon(imageVector = Icons.Default.Refresh, contentDescription = "")
+                    }
+                },
+                maxLines = 1,
                 onValueChange = {
                     passwordFieldState.value = it
                 }
@@ -95,17 +84,26 @@ fun DialogAddNewPassword(state: DialogAddNewPasswordState) {
                 horizontalArrangement = Arrangement.End
             ) {
                 TextButton(onClick = {
-                    state.onPositiveButtonClick(nameFieldState.value, loginFieldState.value, passwordFieldState.value)
+                    onPositiveButtonClick(nameFieldState.value, loginFieldState.value, passwordFieldState.value)
                 }) {
                     Text(text = "OK")
                 }
                 TextButton(
                     modifier = Modifier.padding(start = 8.dp),
-                    onClick = state.onNegativeButtonClick,
+                    onClick = onNegativeButtonClick,
                 ) {
                     Text(text = "CANCEL")
                 }
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun DialogAddNewPasswordPreview() {
+    DialogAddNewPassword(
+        onPositiveButtonClick = { name, login, password ->  },
+        onNegativeButtonClick = {}
+    )
 }

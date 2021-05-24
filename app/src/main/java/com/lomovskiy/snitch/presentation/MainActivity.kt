@@ -31,6 +31,7 @@ import com.lomovskiy.snitch.presentation.redux.AppStore
 import com.lomovskiy.snitch.presentation.screen.*
 import com.lomovskiy.snitch.presentation.theme.SnitchTheme
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.internal.GeneratedEntryPoint
 import kotlinx.coroutines.flow.StateFlow
 
 interface Screen {
@@ -79,48 +80,24 @@ sealed class BottomNavRoot(val screen: Screen, @StringRes val name: Int, val ico
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private val vm: AppViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             SnitchTheme(darkTheme = false) {
-                App(vm)
+                App()
             }
         }
     }
 }
 
-class AppViewModel : ViewModel() {
-
-    private val appStore: AppStore = AppStore(
-        initialState = AppState(emptyList()),
-//            middlewares = emptyList(),
-        reducers = listOf(AppReducer)
-    )
-
-    fun getAppState(): StateFlow<AppState> {
-        return appStore.getState()
-    }
-
-    fun onAddPassword() {
-        appStore.dispatch(AppAction.AddPassword)
-    }
-
-    fun onDeletePassword() {
-        appStore.dispatch(AppAction.DeletePassword)
-    }
-
-}
-
 @Preview
 @Composable
 fun AppPreview() {
-    App(AppViewModel())
+    App()
 }
 
 @Composable
-fun App(viewModel: AppViewModel) {
+fun App() {
 
     val navController = rememberNavController()
 
