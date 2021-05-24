@@ -1,6 +1,5 @@
-package com.lomovskiy.snitch.presentation.screen
+package com.lomovskiy.snitch.presentation.screen.passwords
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -12,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -77,7 +75,7 @@ class ScreenPasswordsViewModel @Inject constructor(
     fun newPasswordAdded(name: String, login: String, password: String) {
         viewModelScope.launch {
             state.value = state.value.copy(isShowingAddNewPasswordDialog = false)
-            passwordsRepo.create(PasswordEntity(UUID.randomUUID().toString(), name, login, password))
+            passwordsRepo.create(PasswordEntity.stub())
         }
     }
 
@@ -117,7 +115,7 @@ fun ScreenPasswordsContent(
     ) {
         LazyColumn {
             items(state.passwords.size) { idx: Int ->
-                Text(text = state.passwords[idx].id)
+                CardPasswordEntry(name = state.passwords[idx].name)
             }
         }
     }

@@ -2,7 +2,6 @@ package com.lomovskiy.snitch.presentation
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.*
@@ -17,22 +16,17 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.lomovskiy.snitch.R
-import com.lomovskiy.snitch.presentation.redux.AppAction
-import com.lomovskiy.snitch.presentation.redux.AppReducer
-import com.lomovskiy.snitch.presentation.redux.AppState
-import com.lomovskiy.snitch.presentation.redux.AppStore
 import com.lomovskiy.snitch.presentation.screen.*
+import com.lomovskiy.snitch.presentation.screen.passwords.ScreenPasswords
+import com.lomovskiy.snitch.presentation.screen.passwords.ScreenPasswordsViewModel
 import com.lomovskiy.snitch.presentation.theme.SnitchTheme
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.internal.GeneratedEntryPoint
-import kotlinx.coroutines.flow.StateFlow
 
 interface Screen {
 
@@ -44,7 +38,7 @@ object NavigationDirections {
 
     val flowPasswords = object : Flow {
 
-        override val destination = "passwords"
+        override val destination = "Passwords"
 
         override val root = "root_passwords"
 
@@ -52,13 +46,13 @@ object NavigationDirections {
 
     val folders = object : Screen {
 
-        override val destination: String = "folders"
+        override val destination: String = "Folders"
 
     }
 
     val settings = object : Screen {
 
-        override val destination: String = "settings"
+        override val destination: String = "Settings"
 
     }
 
@@ -101,10 +95,14 @@ fun App() {
 
     val navController = rememberNavController()
 
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
     Scaffold(
+        topBar = {
+            AppBar(title = currentRoute ?: "null")
+        },
         bottomBar = {
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentRoute = navBackStackEntry?.destination?.route
             BottomNavigation {
                 listOf(
                     BottomNavRoot.PasswordsRoot,
