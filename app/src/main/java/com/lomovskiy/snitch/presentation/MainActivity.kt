@@ -6,7 +6,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
@@ -22,9 +22,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.lomovskiy.snitch.R
-import com.lomovskiy.snitch.presentation.screen.*
-import com.lomovskiy.snitch.presentation.screen.passwords.ScreenPasswords
-import com.lomovskiy.snitch.presentation.screen.passwords.ScreenPasswordsViewModel
+import com.lomovskiy.snitch.presentation.screen.ScreenFolders
+import com.lomovskiy.snitch.presentation.screen.ScreenFoldersViewModel
+import com.lomovskiy.snitch.presentation.screen.ScreenSettings
+import com.lomovskiy.snitch.presentation.screen.ScreenSettingsViewModel
+import com.lomovskiy.snitch.presentation.screen.accounts.ScreenAccounts
+import com.lomovskiy.snitch.presentation.screen.accounts.ScreenAccountsViewModel
 import com.lomovskiy.snitch.presentation.theme.SnitchTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -36,11 +39,11 @@ interface Screen {
 
 object NavigationDirections {
 
-    val flowPasswords = object : Flow {
+    val flowAccounts = object : Flow {
 
-        override val destination = "Passwords"
+        override val destination = "Accounts"
 
-        override val root = "root_passwords"
+        override val route = "root_accounts"
 
     }
 
@@ -60,12 +63,12 @@ object NavigationDirections {
 
 interface Flow : Screen {
 
-    val root: String
+    val route: String
 
 }
 
 sealed class BottomNavRoot(val screen: Screen, @StringRes val name: Int, val icon: ImageVector) {
-    object PasswordsRoot : BottomNavRoot(NavigationDirections.flowPasswords, R.string.screen_passwords_name, Icons.Default.Build)
+    object AccountsRoot : BottomNavRoot(NavigationDirections.flowAccounts, R.string.screen_accounts_name, Icons.Default.AccountCircle)
     object FoldersRoot : BottomNavRoot(NavigationDirections.folders, R.string.screen_folders_name, Icons.Default.Favorite)
     object SettingsRoot : BottomNavRoot(NavigationDirections.settings, R.string.screen_settings_name, Icons.Default.Settings)
 }
@@ -105,7 +108,7 @@ fun App() {
         bottomBar = {
             BottomNavigation {
                 listOf(
-                    BottomNavRoot.PasswordsRoot,
+                    BottomNavRoot.AccountsRoot,
                     BottomNavRoot.FoldersRoot,
                     BottomNavRoot.SettingsRoot
                 ).forEach { screen ->
@@ -130,15 +133,15 @@ fun App() {
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = NavigationDirections.flowPasswords.root
+            startDestination = NavigationDirections.flowAccounts.route
         ) {
             navigation(
-                startDestination = NavigationDirections.flowPasswords.destination,
-                route = NavigationDirections.flowPasswords.root
+                startDestination = NavigationDirections.flowAccounts.destination,
+                route = NavigationDirections.flowAccounts.route
             ) {
-                composable(NavigationDirections.flowPasswords.destination) {
-                    val vm: ScreenPasswordsViewModel = hiltViewModel()
-                    ScreenPasswords(paddingValues = paddingValues, vm = vm)
+                composable(NavigationDirections.flowAccounts.destination) {
+                    val vm: ScreenAccountsViewModel = hiltViewModel()
+                    ScreenAccounts(vm = vm)
                 }
             }
             composable(NavigationDirections.folders.destination) {

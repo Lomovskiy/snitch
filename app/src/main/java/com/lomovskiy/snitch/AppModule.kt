@@ -1,7 +1,7 @@
 package com.lomovskiy.snitch
 
-import com.lomovskiy.snitch.data.PasswordsRepoImpl
-import com.lomovskiy.snitch.domain.repo.PasswordsRepo
+import com.lomovskiy.snitch.data.AccountsRepoImpl
+import com.lomovskiy.snitch.domain.repo.AccountsRepo
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -24,6 +24,6 @@ abstract class AppModule {
     }
 
     @Binds
-    abstract fun bindPasswordsRepo(impl: PasswordsRepoImpl): PasswordsRepo
+    abstract fun bindAccountsRepo(impl: AccountsRepoImpl): AccountsRepo
 
 }
